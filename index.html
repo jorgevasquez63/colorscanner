@@ -30,7 +30,6 @@
         #video {
             width: 100%;
             height: auto;
-            transform: scaleX(-1); /* Espejo para un efecto de selfie */
         }
     </style>
 </head>
@@ -46,7 +45,9 @@
 
         async function startCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" } // Cámara trasera
+                });
                 video.srcObject = stream;
             } catch (error) {
                 alert("Error accediendo a la cámara: " + error.message);
