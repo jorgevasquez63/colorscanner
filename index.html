@@ -14,37 +14,53 @@
             font-size: 20px;
             border-radius: 5px;
         }
+        #capture-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #video {
+            width: 100%;
+            height: auto;
+            transform: scaleX(-1); /* Espejo para un efecto de selfie */
+        }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <div id="color-hex">Hex Color: #FFFFFF</div>
-    <video id="video" autoplay playsinline style="display: none;"></video>
+    <video id="video" autoplay playsinline></video>
+    <button id="capture-btn">Capturar Color</button>
 
     <script>
         const colorHexDisplay = document.getElementById("color-hex");
         const video = document.getElementById("video");
+        const captureBtn = document.getElementById("capture-btn");
 
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-
-                // Inicia la detección de color cada 200 ms sin depender de eventos
-                setInterval(() => detectColor(video), 200);
             } catch (error) {
                 alert("Error accediendo a la cámara: " + error.message);
             }
         }
 
-        function detectColor(video) {
-            // Asegurarse de que el video tenga dimensiones válidas
-            if (video.videoWidth > 0 && video.videoHeight > 0) {
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
+        function captureColor() {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
 
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
 
+            if (canvas.width && canvas.height) {
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                 // Captura el color del pixel central
@@ -74,6 +90,7 @@
             );
         }
 
+        captureBtn.addEventListener("click", captureColor);
         startCamera();
     </script>
 </body>
