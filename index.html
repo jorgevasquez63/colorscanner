@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Detector AR</title>
+    <!-- Incluye A-Frame y AR.js -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.min.js"></script>
+    <style>
+        #color-hex {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <div id="color-hex">Hex Color: #FFFFFF</div>
+    
+    <!-- Elemento de A-Frame con AR.js -->
+    <a-scene embedded arjs>
+        <a-camera></a-camera>
+    </a-scene>
+
+    <script>
+        const colorHexDisplay = document.getElementById("color-hex");
+
+        // Solicita permiso de cámara
+        async function startVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.querySelector("video");
+
+                // Inicia la detección de color cada 200 ms
+                setInterval(() => detectColor(video), 200);
+            } catch (error) {
+                alert("No se pudo acceder a la cámara. Asegúrate de permitir el acceso.");
+            }
+        }
+
+        // Detecta el color en el centro de la pantalla
+        function detectColor(video) {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Dibuja el fotograma actual del video en el canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Captura un punto central para obtener el color promedio
+            const pixel = context.getImageData(
+                canvas.width / 2,
+                canvas.height / 2,
+                1,
+                1
+            ).data;
+
+            // Convierte RGB a hexadecimal
+            const hexColor = rgbToHex(pixel[0], pixel[1], pixel[2]);
+            colorHexDisplay.textContent = `Hex Color: ${hexColor}`;
+        }
+
+        // Convierte valores RGB a hexadecimal
+        function rgbToHex(r, g, b) {
+            return (
+                "#" +
+                [r, g, b]
+                    .map((x) => x.toString(16).padStart(2, "0"))
+                    .join("")
+                    .toUpperCase()
+            );
+        }
+
+        // Inicia la solicitud de acceso a la cámara
+        startVideo();
+    </script>
+</body>
+</html>
