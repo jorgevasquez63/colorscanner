@@ -28,24 +28,23 @@
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-                
-                video.addEventListener('loadeddata', () => {
-                    // Inicia la detección de color cada 200 ms una vez que el video está cargado
-                    setInterval(() => detectColor(video), 200);
-                });
+
+                // Inicia la detección de color cada 200 ms sin depender de eventos
+                setInterval(() => detectColor(video), 200);
             } catch (error) {
                 alert("Error accediendo a la cámara: " + error.message);
             }
         }
 
         function detectColor(video) {
-            const canvas = document.createElement("canvas");
-            const context = canvas.getContext("2d");
+            // Asegurarse de que el video tenga dimensiones válidas
+            if (video.videoWidth > 0 && video.videoHeight > 0) {
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
 
-            if (canvas.width && canvas.height) {
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                 // Captura el color del pixel central
@@ -61,7 +60,7 @@
                 colorHexDisplay.textContent = `Hex Color: ${hexColor}`;
                 colorHexDisplay.style.backgroundColor = hexColor;
             } else {
-                console.log("Video aún no cargado completamente.");
+                console.log("Esperando que el video cargue...");
             }
         }
 
